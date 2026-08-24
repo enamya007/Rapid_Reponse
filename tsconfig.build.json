@@ -1,8 +1,0 @@
-{
-  "extends": "./tsconfig.json",
-  // `scripts` is excluded like `test`: it only holds dev tooling run through ts-node
-  // (`openapi:generate`). Compiling it would make the emitted rootDir the project root
-  // instead of `src`, shifting every output to `dist/src/**` and breaking both the
-  // `dist/main.js` entry point and the `.env` lookup in src/database/data-source.ts.
-  "exclude": ["node_modules", "test", "scripts", "dist", "**/*spec.ts"]
-}
