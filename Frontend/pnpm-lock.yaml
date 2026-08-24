@@ -16,7 +16,7 @@ importers:
         version: 11.14.1(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.4))(@types/react@19.2.18)(react@19.2.4)
       '@hookform/resolvers':
         specifier: ^5.7.1
-        version: 5.7.1(react-hook-form@7.84.0(react@19.2.4))(valibot@1.4.2(typescript@5.9.3))(zod@4.4.3)
+        version: 5.7.1(react-hook-form@7.86.0(react@19.2.4))(valibot@1.4.2(typescript@5.9.3))(zod@4.4.3)
       '@mui/icons-material':
         specifier: ^9.2.0
         version: 9.2.0(@mui/material@9.2.0(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.4))(@emotion/styled@11.14.1(@emotion/react@11.14.0(@types/react@19.2.18)(react@19.2.4))(@types/react@19.2.18)(react@19.2.4))(@types/react@19.2.18)(react-dom@19.2.4(react@19.2.4))(react@19.2.4))(@types/react@19.2.18)(react@19.2.4)
@@ -51,8 +51,8 @@ importers:
         specifier: 19.2.4
         version: 19.2.4(react@19.2.4)
       react-hook-form:
-        specifier: ^7.84.0
-        version: 7.84.0(react@19.2.4)
+        specifier: ^7.86.0
+        version: 7.86.0(react@19.2.4)
       valibot:
         specifier: ^1.4.2
         version: 1.4.2(typescript@5.9.3)
@@ -2190,8 +2190,8 @@ packages:
     peerDependencies:
       react: ^19.2.4
 
-  react-hook-form@7.84.0:
-    resolution: {integrity: sha512-+hWvQP6GLco56mDwrbU4XnHix8t1z90ltZsDIrREl+jnQFQxYLX8oAzqe/Xn8nHpmoXTY5M6oEXrAhbP1qevNQ==}
+  react-hook-form@7.86.0:
+    resolution: {integrity: sha512-4kbWJrh5jPZt1+YqVcXcGKffGcXV/XVbozknLh0Yjh0KhpoAkus21TAQhzRYqNwFkkObmnSvRlZZ3GT+ehoIrA==}
     engines: {node: '>=18.0.0'}
     peerDependencies:
       react: ^16.8.0 || ^17 || ^18 || ^19
@@ -2772,10 +2772,10 @@ snapshots:
       '@eslint/core': 0.17.0
       levn: 0.4.1
 
-  '@hookform/resolvers@5.7.1(react-hook-form@7.84.0(react@19.2.4))(valibot@1.4.2(typescript@5.9.3))(zod@4.4.3)':
+  '@hookform/resolvers@5.7.1(react-hook-form@7.86.0(react@19.2.4))(valibot@1.4.2(typescript@5.9.3))(zod@4.4.3)':
     dependencies:
       '@standard-schema/utils': 0.3.0
-      react-hook-form: 7.84.0(react@19.2.4)
+      react-hook-form: 7.86.0(react@19.2.4)
     optionalDependencies:
       valibot: 1.4.2(typescript@5.9.3)
       zod: 4.4.3
@@ -4633,7 +4633,7 @@ snapshots:
       react: 19.2.4
       scheduler: 0.27.0
 
-  react-hook-form@7.84.0(react@19.2.4):
+  react-hook-form@7.86.0(react@19.2.4):
     dependencies:
       react: 19.2.4
 

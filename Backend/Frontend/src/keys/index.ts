@@ -1,8 +1,0 @@
-export { authKeys } from '@/keys/auth.keys'
-export { ticketsKeys } from '@/keys/tickets.keys'
-export { techniciansKeys } from '@/keys/technicians.keys'
-export { attachmentsKeys } from '@/keys/attachments.keys'
-export { skillsKeys } from '@/keys/skills.keys'
-export { notificationsKeys } from '@/keys/notifications.keys'
-export { usersKeys } from '@/keys/users.keys'
-export { categoriesKeys } from '@/keys/categories.keys'
