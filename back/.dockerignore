@@ -1,0 +1,32 @@
+# Dependencies and build output are reinstalled/rebuilt inside the image;
+# shipping the host's copies would bloat the image and can leak
+# host-specific native bindings.
+node_modules
+dist
+build
+
+# VCS and CI metadata, never needed at runtime.
+.git
+.github
+
+# Secrets: never let any env file reach the build context. Not needed anyway
+# -- the runner stage only ever copies dist/, node_modules/ and package.json.
+.env*
+
+# Tests and coverage: not shipped in the runtime image.
+test
+coverage
+**/*.spec.ts
+**/*.e2e-spec.ts
+
+# Docs.
+*.md
+
+# Compose files: irrelevant inside the build context.
+docker-compose*.yml
+
+# Editor/OS noise.
+.vscode
+.idea
+.DS_Store
+*.log
