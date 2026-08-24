@@ -1,0 +1,3907 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/api": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/api/users": {
+      "post": {
+        "operationId": "UsersController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed, an unknown field was sent, or role is TECHNICIAN (use POST /technicians instead)"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Caller is not an ADMIN\n\nInsufficient role permissions"
+          },
+          "409": {
+            "description": "username or email already in use"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a user account (ADMIN only)",
+        "tags": [
+          "users"
+        ]
+      },
+      "get": {
+        "operationId": "UsersController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "role",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/UserRole"
+            }
+          },
+          {
+            "name": "isActive",
+            "required": false,
+            "in": "query",
+            "description": "Filter by User.isActive",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "Case-insensitive partial match on username, email, firstName or lastName",
+            "schema": {
+              "minLength": 1,
+              "maxLength": 255,
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/UserResponseDto"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Caller is not an ADMIN\n\nInsufficient role permissions"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "List user accounts, paginated and filtered, sorted by username ASC (ADMIN only). Soft-deleted accounts are excluded.",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/users/{id}": {
+      "get": {
+        "operationId": "UsersController_getById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Caller is not an ADMIN\n\nInsufficient role permissions"
+          },
+          "404": {
+            "description": "User not found"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a single user account by id (ADMIN only)",
+        "tags": [
+          "users"
+        ]
+      },
+      "patch": {
+        "operationId": "UsersController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No field provided, a role change to/from TECHNICIAN, or an attempt by the caller to change their own role/activation"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Caller is not an ADMIN\n\nInsufficient role permissions"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "409": {
+            "description": "username or email already in use"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a user account — profile fields, role (ADMIN \u003C-\u003E CLIENT only) and activation (ADMIN only)",
+        "tags": [
+          "users"
+        ]
+      },
+      "delete": {
+        "operationId": "UsersController_softDelete",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Account soft-deleted"
+          },
+          "400": {
+            "description": "An ADMIN cannot delete themselves"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Caller is not an ADMIN\n\nInsufficient role permissions"
+          },
+          "404": {
+            "description": "User not found"
+          },
+          "409": {
+            "description": "The user is still assigned to open tickets"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Soft-delete a user account (ADMIN only). The row is kept so tickets and history stay traceable.",
+        "tags": [
+          "users"
+        ]
+      }
+    },
+    "/api/auth/register": {
+      "post": {
+        "operationId": "AuthController_register",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RegisterDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "409": {
+            "description": "Username or email already in use"
+          }
+        },
+        "summary": "Create a new user account and issue a token pair",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/login": {
+      "post": {
+        "operationId": "AuthController_login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid credentials, or account disabled"
+          },
+          "429": {
+            "description": "Too many login attempts, try again later"
+          }
+        },
+        "summary": "Authenticate with username/password and issue a token pair",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/refresh": {
+      "post": {
+        "operationId": "AuthController_refresh",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Invalid, expired or reused refresh token"
+          }
+        },
+        "summary": "Rotate a refresh token and issue a new token pair",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/forgot-password": {
+      "post": {
+        "operationId": "AuthController_forgotPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ForgotPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Always returned, regardless of whether the email exists or the account is active.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "If the account exists, a reset link has been sent."
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Request a password reset email. Always responds 202 with the same body, whether or not the address belongs to an account (anti-enumeration, P6 contract D13).",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/reset-password": {
+      "post": {
+        "operationId": "AuthController_resetPassword",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResetPasswordDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Password reset"
+          },
+          "400": {
+            "description": "Invalid or expired token — returned identically for every failure mode (malformed token, unknown/used/expired token, wrong secret, disabled account; P6 contract D12)."
+          }
+        },
+        "summary": "Consume a password reset token: sets the new password and revokes every active refresh token for the account.",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/logout": {
+      "post": {
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "204": {
+            "description": "Refresh token revoked (idempotent: also returned for an already-invalid token)"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Revoke a refresh token",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/auth/me": {
+      "get": {
+        "operationId": "AuthController_me",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get the currently authenticated user",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/api/tickets": {
+      "post": {
+        "operationId": "TicketsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTicketDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Insufficient role permissions"
+          },
+          "404": {
+            "description": "Category not found (or inactive)"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new ticket",
+        "tags": [
+          "tickets"
+        ]
+      },
+      "get": {
+        "operationId": "TicketsController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "status",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/TicketStatus"
+            }
+          },
+          {
+            "name": "priority",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "$ref": "#/components/schemas/TicketPriority"
+            }
+          },
+          {
+            "name": "categoryId",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "assigneeId",
+            "required": false,
+            "in": "query",
+            "description": "Honored for ADMIN callers only",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "createdById",
+            "required": false,
+            "in": "query",
+            "description": "Honored for ADMIN callers only",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "q",
+            "required": false,
+            "in": "query",
+            "description": "Free-text search on title and reference (case-insensitive)",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "sort",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "createdAt",
+              "type": "string",
+              "enum": [
+                "createdAt",
+                "priority",
+                "slaDueAt",
+                "status"
+              ]
+            }
+          },
+          {
+            "name": "order",
+            "required": false,
+            "in": "query",
+            "schema": {
+              "default": "DESC",
+              "type": "string",
+              "enum": [
+                "ASC",
+                "DESC"
+              ]
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/TicketListItemDto"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "List tickets, paginated and filtered, scoped by the caller's role",
+        "tags": [
+          "tickets"
+        ]
+      }
+    },
+    "/api/tickets/{id}": {
+      "get": {
+        "operationId": "TicketsController_getById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Not the owner, the assignee, nor an admin"
+          },
+          "404": {
+            "description": "Ticket not found"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a single ticket by id",
+        "tags": [
+          "tickets"
+        ]
+      },
+      "patch": {
+        "operationId": "TicketsController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTicketDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No field provided to update"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Not an admin, not the owning CLIENT with the ticket still OPEN (nor the owner at all), or a TECHNICIAN"
+          },
+          "404": {
+            "description": "Ticket not found, or the given categoryId is unknown/inactive"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update mutable fields of a ticket (role x status rules enforced by the service)",
+        "tags": [
+          "tickets"
+        ]
+      },
+      "delete": {
+        "operationId": "TicketsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Ticket soft deleted"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Caller is not an ADMIN\n\nInsufficient role permissions"
+          },
+          "404": {
+            "description": "Ticket not found"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Soft delete a ticket (ADMIN only)",
+        "tags": [
+          "tickets"
+        ]
+      }
+    },
+    "/api/tickets/{id}/start": {
+      "post": {
+        "operationId": "TicketsController_start",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "OwnershipGuard rejected the caller (not owner/assignee/admin), or the P3 evaluator rejected the request for the caller role/ownership/assignment given the current status (GUARD_FAILED)"
+          },
+          "404": {
+            "description": "Ticket not found"
+          },
+          "409": {
+            "description": "The requested event is not a valid transition from the current status (INVALID_TRANSITION)"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Start work on an assigned ticket (START)",
+        "tags": [
+          "tickets"
+        ]
+      }
+    },
+    "/api/tickets/{id}/resolve": {
+      "post": {
+        "operationId": "TicketsController_resolve",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ResolveTicketDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "resolutionNote missing or invalid"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "OwnershipGuard rejected the caller (not owner/assignee/admin), or the P3 evaluator rejected the request for the caller role/ownership/assignment given the current status (GUARD_FAILED)"
+          },
+          "404": {
+            "description": "Ticket not found"
+          },
+          "409": {
+            "description": "The requested event is not a valid transition from the current status (INVALID_TRANSITION)"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Resolve an in-progress ticket (RESOLVE)",
+        "tags": [
+          "tickets"
+        ]
+      }
+    },
+    "/api/tickets/{id}/reopen": {
+      "post": {
+        "operationId": "TicketsController_reopen",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReasonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "reason invalid, if supplied"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "OwnershipGuard rejected the caller (not owner/assignee/admin), or the P3 evaluator rejected the request for the caller role/ownership/assignment given the current status (GUARD_FAILED)"
+          },
+          "404": {
+            "description": "Ticket not found"
+          },
+          "409": {
+            "description": "The requested event is not a valid transition from the current status (INVALID_TRANSITION)"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Reopen a resolved ticket (REOPEN)",
+        "tags": [
+          "tickets"
+        ]
+      }
+    },
+    "/api/tickets/{id}/close": {
+      "post": {
+        "operationId": "TicketsController_close",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "OwnershipGuard rejected the caller (not owner/assignee/admin), or the P3 evaluator rejected the request for the caller role/ownership/assignment given the current status (GUARD_FAILED)"
+          },
+          "404": {
+            "description": "Ticket not found"
+          },
+          "409": {
+            "description": "The requested event is not a valid transition from the current status (INVALID_TRANSITION)"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Close a resolved ticket (CLOSE)",
+        "tags": [
+          "tickets"
+        ]
+      }
+    },
+    "/api/tickets/{id}/cancel": {
+      "post": {
+        "operationId": "TicketsController_cancel",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReasonDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "reason invalid, if supplied"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "OwnershipGuard rejected the caller (not owner/assignee/admin), or the P3 evaluator rejected the request for the caller role/ownership/assignment given the current status (GUARD_FAILED)"
+          },
+          "404": {
+            "description": "Ticket not found"
+          },
+          "409": {
+            "description": "The requested event is not a valid transition from the current status (INVALID_TRANSITION)"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Cancel a ticket (CANCEL)",
+        "tags": [
+          "tickets"
+        ]
+      }
+    },
+    "/api/tickets/{id}/assignment-suggestions": {
+      "get": {
+        "operationId": "TicketsController_getAssignmentSuggestions",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Maximum number of suggestions to return (default 10).",
+            "schema": {
+              "minimum": 1,
+              "maximum": 50,
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TechnicianSuggestionDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Caller is not an ADMIN\n\nInsufficient role permissions"
+          },
+          "404": {
+            "description": "Ticket not found"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Suggest eligible technicians for a ticket, ranked deterministically (consultative only, D6 — never assigns anything)",
+        "tags": [
+          "tickets"
+        ]
+      }
+    },
+    "/api/tickets/{id}/assign": {
+      "post": {
+        "operationId": "TicketsController_assign",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AssignTicketDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TicketResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "technicianId is invalid, or (D5) equals the ticket's current assignee"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Caller is not an ADMIN, the target technician is not eligible for assignment (D1), or the P3 evaluator rejected the request (GUARD_FAILED — e.g. a reassignment with no reason)\n\nInsufficient role permissions"
+          },
+          "404": {
+            "description": "Ticket not found"
+          },
+          "409": {
+            "description": "The requested event is not a valid transition from the current status (INVALID_TRANSITION)"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Assign or reassign a ticket to a technician (ADMIN only, ASSIGN — reassigning an already ASSIGNED ticket requires a reason, enforced by the P3 guard)",
+        "tags": [
+          "tickets"
+        ]
+      }
+    },
+    "/api/tickets/{id}/assignments": {
+      "get": {
+        "operationId": "TicketsController_getAssignmentHistory",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TicketAssignmentResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Not the owner, the assignee, nor an admin"
+          },
+          "404": {
+            "description": "Ticket not found"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a ticket's full assignment history, most recent first (§4.4)",
+        "tags": [
+          "tickets"
+        ]
+      }
+    },
+    "/api/technicians": {
+      "post": {
+        "operationId": "TechniciansController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateTechnicianDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TechnicianResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed (missing/invalid field, or an unknown field was sent)"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Caller is not an ADMIN\n\nInsufficient role permissions"
+          },
+          "404": {
+            "description": "One or more of the given skillIds do not exist (no user is created in that case)"
+          },
+          "409": {
+            "description": "username or email already in use"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a technician account and profile (ADMIN only)",
+        "tags": [
+          "technicians"
+        ]
+      },
+      "get": {
+        "operationId": "TechniciansController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "isAvailable",
+            "required": false,
+            "in": "query",
+            "description": "Filter by TechnicianProfile.isAvailable",
+            "schema": {
+              "type": "boolean"
+            }
+          },
+          {
+            "name": "skillId",
+            "required": false,
+            "in": "query",
+            "description": "Only technicians holding this skill",
+            "schema": {
+              "format": "uuid",
+              "type": "string"
+            }
+          },
+          {
+            "name": "isActive",
+            "required": false,
+            "in": "query",
+            "description": "Filter by User.isActive",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/TechnicianResponseDto"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Caller is not an ADMIN\n\nInsufficient role permissions"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "List technicians, paginated and filtered (ADMIN only)",
+        "tags": [
+          "technicians"
+        ]
+      }
+    },
+    "/api/technicians/me/availability": {
+      "patch": {
+        "operationId": "TechniciansController_updateMyAvailability",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateAvailabilityDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TechnicianResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "isAvailable missing/invalid"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Caller is not a TECHNICIAN\n\nInsufficient role permissions"
+          },
+          "404": {
+            "description": "Caller has no technician profile"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update the caller's own technician availability",
+        "tags": [
+          "technicians"
+        ]
+      }
+    },
+    "/api/technicians/{id}": {
+      "get": {
+        "operationId": "TechniciansController_getById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TechnicianResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Caller is a CLIENT, or a TECHNICIAN requesting a profile other than their own\n\nInsufficient role permissions"
+          },
+          "404": {
+            "description": "Technician not found"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a single technician by id (userId, D4) — ADMIN reads any technician, a TECHNICIAN only their own",
+        "tags": [
+          "technicians"
+        ]
+      },
+      "patch": {
+        "operationId": "TechniciansController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateTechnicianDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TechnicianResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No field provided to update"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Caller is not an ADMIN\n\nInsufficient role permissions"
+          },
+          "404": {
+            "description": "Technician not found"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a technician (availability, capacity, and/or account activation — ADMIN only)",
+        "tags": [
+          "technicians"
+        ]
+      }
+    },
+    "/api/technicians/{id}/skills": {
+      "put": {
+        "operationId": "TechniciansController_setSkills",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetTechnicianSkillsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TechnicianResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Caller is not an ADMIN\n\nInsufficient role permissions"
+          },
+          "404": {
+            "description": "Technician not found, or one or more skillIds do not exist"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Replace a technician's full skill set (ADMIN only) — previous skills are discarded",
+        "tags": [
+          "technicians"
+        ]
+      }
+    },
+    "/api/tickets/{id}/comments": {
+      "post": {
+        "operationId": "TicketCommentsController_create",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCommentDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommentResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "body missing/empty/too long, or an invalid visibility value"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "OwnershipGuard rejected the caller (not owner/assignee/admin), or a CLIENT attempted to post an INTERNAL comment"
+          },
+          "404": {
+            "description": "Ticket not found"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Post a comment on a ticket",
+        "tags": [
+          "tickets"
+        ]
+      },
+      "get": {
+        "operationId": "TicketCommentsController_list",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/CommentResponseDto"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Not the owner, the assignee, nor an admin"
+          },
+          "404": {
+            "description": "Ticket not found"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "List a ticket's comments, paginated and sorted chronologically (createdAt ASC); INTERNAL comments are excluded for a CLIENT caller",
+        "tags": [
+          "tickets"
+        ]
+      }
+    },
+    "/api/tickets/{id}/attachments": {
+      "post": {
+        "operationId": "AttachmentsController_upload",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "file": {
+                    "type": "string",
+                    "format": "binary"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AttachmentResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No file provided under \"file\""
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Not the owner, the assignee, nor an admin (OwnershipGuard)"
+          },
+          "404": {
+            "description": "Ticket not found"
+          },
+          "413": {
+            "description": "File size exceeds UPLOAD_MAX_SIZE_BYTES"
+          },
+          "415": {
+            "description": "MIME type not in UPLOAD_ALLOWED_MIME_TYPES"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Upload an attachment to a ticket",
+        "tags": [
+          "attachments"
+        ]
+      },
+      "get": {
+        "operationId": "AttachmentsController_list",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/AttachmentResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Not the owner, the assignee, nor an admin (OwnershipGuard)"
+          },
+          "404": {
+            "description": "Ticket not found"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "List the attachments of a ticket",
+        "tags": [
+          "attachments"
+        ]
+      }
+    },
+    "/api/tickets/{id}/attachments/{attId}": {
+      "delete": {
+        "operationId": "AttachmentsController_remove",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "attId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Attachment soft deleted"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Not the owner, the assignee, nor an admin (OwnershipGuard); or the caller can see the ticket but is neither the attachment's author nor an admin"
+          },
+          "404": {
+            "description": "Ticket not found, or the attachment does not exist / does not belong to this ticket"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Soft delete an attachment (its author, or an admin, only)",
+        "tags": [
+          "attachments"
+        ]
+      }
+    },
+    "/api/skills": {
+      "post": {
+        "operationId": "SkillsController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateSkillDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "name missing/too short/too long, description too long, or an unknown field was sent"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Caller is not an ADMIN\n\nInsufficient role permissions"
+          },
+          "409": {
+            "description": "A skill with this name already exists"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a new skill (ADMIN only)",
+        "tags": [
+          "skills"
+        ]
+      },
+      "get": {
+        "operationId": "SkillsController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SkillResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "List every skill, sorted by name ASC (not paginated)",
+        "tags": [
+          "skills"
+        ]
+      }
+    },
+    "/api/notifications": {
+      "get": {
+        "operationId": "NotificationsController_list",
+        "parameters": [
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "1-based page number",
+            "schema": {
+              "minimum": 1,
+              "default": 1,
+              "example": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "Number of items per page",
+            "schema": {
+              "minimum": 1,
+              "maximum": 100,
+              "default": 20,
+              "example": 20,
+              "type": "number"
+            }
+          },
+          {
+            "name": "unreadOnly",
+            "required": false,
+            "in": "query",
+            "description": "When true, only unread notifications are returned. Omitted or false (D18) returns every notification.",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    {
+                      "$ref": "#/components/schemas/PaginatedResponseDto"
+                    },
+                    {
+                      "properties": {
+                        "data": {
+                          "type": "array",
+                          "items": {
+                            "$ref": "#/components/schemas/NotificationResponseDto"
+                          }
+                        }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "List the caller's own notifications, paginated, newest first (D16 — no ADMIN override)",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/notifications/unread-count": {
+      "get": {
+        "operationId": "NotificationsController_unreadCount",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UnreadCountResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Count the caller's unread notifications",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/notifications/read-all": {
+      "patch": {
+        "operationId": "NotificationsController_readAll",
+        "parameters": [],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Mark all of the caller's notifications as read",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/notifications/{id}/read": {
+      "patch": {
+        "operationId": "NotificationsController_markRead",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": ""
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "404": {
+            "description": "Notification doesn't exist, OR belongs to a different recipient — deliberately never a 403, which would reveal its existence to a caller who cannot see it"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Mark a single notification as read (idempotent — already read is still 204)",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/api/categories": {
+      "post": {
+        "operationId": "CategoriesController_create",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Validation failed, or an unknown field was sent"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Caller is not an ADMIN\n\nInsufficient role permissions"
+          },
+          "404": {
+            "description": "The given requiredSkillId is unknown"
+          },
+          "409": {
+            "description": "A category with this name already exists"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Create a ticket category (ADMIN only)",
+        "tags": [
+          "categories"
+        ]
+      },
+      "get": {
+        "operationId": "CategoriesController_findAll",
+        "parameters": [
+          {
+            "name": "isActive",
+            "required": false,
+            "in": "query",
+            "description": "Filter by Category.isActive. A ticket-creation form wants isActive=true.",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/CategoryResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "List categories, sorted by name ASC (not paginated). Available to every authenticated role.",
+        "tags": [
+          "categories"
+        ]
+      }
+    },
+    "/api/categories/{id}": {
+      "get": {
+        "operationId": "CategoriesController_getById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "404": {
+            "description": "Category not found"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Get a single category by id",
+        "tags": [
+          "categories"
+        ]
+      },
+      "patch": {
+        "operationId": "CategoriesController_update",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateCategoryDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "No field provided to update"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Caller is not an ADMIN\n\nInsufficient role permissions"
+          },
+          "404": {
+            "description": "Category not found, or the given requiredSkillId is unknown"
+          },
+          "409": {
+            "description": "Another category already uses this name"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Update a category — including retiring it with isActive: false, which is how a category is removed (there is no DELETE, D6)",
+        "tags": [
+          "categories"
+        ]
+      }
+    },
+    "/api/sla-policies": {
+      "get": {
+        "operationId": "SlaController_findAll",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/SlaPolicyResponseDto"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "List the SLA policies, ordered CRITICAL, HIGH, NORMAL, LOW (not paginated: one row per priority)",
+        "tags": [
+          "sla-policies"
+        ]
+      }
+    },
+    "/api/sla-policies/{priority}": {
+      "put": {
+        "operationId": "SlaController_upsert",
+        "parameters": [
+          {
+            "name": "priority",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "$ref": "#/components/schemas/TicketPriority"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpsertSlaPolicyDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SlaPolicyResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Unknown priority, resolutionTargetMinutes missing/out of range, or an unknown field was sent"
+          },
+          "401": {
+            "description": "Missing or invalid access token"
+          },
+          "403": {
+            "description": "Caller is not an ADMIN\n\nInsufficient role permissions"
+          }
+        },
+        "security": [
+          {
+            "access-token": []
+          }
+        ],
+        "summary": "Set the resolution target for a priority (ADMIN only). Creates the policy if that priority has none. Applies to tickets created afterwards only.",
+        "tags": [
+          "sla-policies"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Ticket Checker API",
+    "description": "",
+    "version": "1.0",
+    "contact": {
+
+    }
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "access-token": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "UserRole": {
+        "type": "string",
+        "enum": [
+          "ADMIN",
+          "TECHNICIAN",
+          "CLIENT"
+        ],
+        "description": "ADMIN or CLIENT. TECHNICIAN is rejected with 400 — use POST /technicians, which creates the account and its technician profile in one transaction (D1)."
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "jdoe",
+            "minLength": 3,
+            "maxLength": 50
+          },
+          "email": {
+            "type": "string",
+            "example": "jdoe@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "Str0ngP@ssw0rd",
+            "minLength": 10,
+            "maxLength": 72
+          },
+          "role": {
+            "default": "CLIENT",
+            "description": "ADMIN or CLIENT. TECHNICIAN is rejected with 400 — use POST /technicians, which creates the account and its technician profile in one transaction (D1).",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserRole"
+              }
+            ]
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Jane",
+            "maxLength": 80
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe",
+            "maxLength": 80
+          },
+          "phone": {
+            "type": "string",
+            "example": "+228 90 00 00 00",
+            "maxLength": 30
+          }
+        },
+        "required": [
+          "username",
+          "email",
+          "password"
+        ]
+      },
+      "UserResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "role": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserRole"
+              }
+            ]
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "email",
+          "firstName",
+          "lastName",
+          "phone",
+          "role",
+          "isActive",
+          "createdAt"
+        ]
+      },
+      "PaginationMetaDto": {
+        "type": "object",
+        "properties": {
+          "total": {
+            "type": "number",
+            "example": 42,
+            "description": "Total number of items across all pages"
+          },
+          "page": {
+            "type": "number",
+            "example": 1,
+            "description": "Current, 1-based page number"
+          },
+          "limit": {
+            "type": "number",
+            "example": 20,
+            "description": "Number of items per page"
+          },
+          "totalPages": {
+            "type": "number",
+            "example": 3,
+            "description": "Total number of pages"
+          }
+        },
+        "required": [
+          "total",
+          "page",
+          "limit",
+          "totalPages"
+        ]
+      },
+      "PaginatedResponseDto": {
+        "type": "object",
+        "properties": {
+          "data": {
+            "type": "array",
+            "items": {
+              "type": "object"
+            },
+            "description": "Page of results. The concrete item type is documented per-endpoint by @ApiPaginatedResponse()."
+          },
+          "meta": {
+            "$ref": "#/components/schemas/PaginationMetaDto"
+          }
+        },
+        "required": [
+          "data",
+          "meta"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "minLength": 3,
+            "maxLength": 50
+          },
+          "email": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "lastName": {
+            "type": "string",
+            "maxLength": 80
+          },
+          "phone": {
+            "type": "string",
+            "maxLength": 30
+          },
+          "role": {
+            "description": "ADMIN \u003C-\u003E CLIENT only. Any change to or from TECHNICIAN is rejected with 400 (D2).",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserRole"
+              }
+            ]
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Deactivating an account takes effect on the very next request: JwtStrategy re-reads the user and rejects an inactive one (D5)."
+          }
+        }
+      },
+      "RegisterDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "jdoe"
+          },
+          "email": {
+            "type": "string",
+            "example": "jdoe@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "Str0ngP@ssw0rd",
+            "minLength": 10,
+            "maxLength": 72
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Jane"
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe"
+          },
+          "phone": {
+            "type": "string",
+            "example": "+1 555 123 4567"
+          }
+        },
+        "required": [
+          "username",
+          "email",
+          "password"
+        ]
+      },
+      "AuthResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIn0.abc123"
+          },
+          "refreshToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIn0.def456"
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserResponseDto"
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken",
+          "user"
+        ]
+      },
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "identifier": {
+            "type": "string",
+            "example": "jdoe",
+            "description": "Username or email"
+          },
+          "password": {
+            "type": "string",
+            "example": "Str0ngP@ssw0rd"
+          }
+        },
+        "required": [
+          "identifier",
+          "password"
+        ]
+      },
+      "RefreshTokenDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxIn0.abc123"
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
+      "ForgotPasswordDto": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string",
+            "example": "jdoe@example.com"
+          }
+        },
+        "required": [
+          "email"
+        ]
+      },
+      "ResetPasswordDto": {
+        "type": "object",
+        "properties": {
+          "token": {
+            "type": "string",
+            "example": "3fa85f64-5717-4562-b3fc-2c963f66afa6.k3f9...base64url-secret"
+          },
+          "newPassword": {
+            "type": "string",
+            "example": "Str0ngP@ssw0rd",
+            "minLength": 10,
+            "maxLength": 72
+          }
+        },
+        "required": [
+          "token",
+          "newPassword"
+        ]
+      },
+      "TicketPriority": {
+        "type": "string",
+        "enum": [
+          "LOW",
+          "NORMAL",
+          "HIGH",
+          "CRITICAL"
+        ]
+      },
+      "CreateTicketDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Panne de climatisation salle serveur",
+            "minLength": 3,
+            "maxLength": 150
+          },
+          "description": {
+            "type": "string",
+            "example": "La climatisation ne démarre plus depuis ce matin.",
+            "minLength": 1,
+            "maxLength": 5000
+          },
+          "priority": {
+            "default": "NORMAL",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TicketPriority"
+              }
+            ]
+          },
+          "categoryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "siteLabel": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "siteAddress": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "title",
+          "description",
+          "categoryId"
+        ]
+      },
+      "TicketStatus": {
+        "type": "string",
+        "enum": [
+          "OPEN",
+          "ASSIGNED",
+          "IN_PROGRESS",
+          "RESOLVED",
+          "CLOSED",
+          "CANCELLED"
+        ]
+      },
+      "TicketCategorySummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "UserSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "firstName",
+          "lastName"
+        ]
+      },
+      "TicketResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "reference": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TicketStatus"
+              }
+            ]
+          },
+          "priority": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TicketPriority"
+              }
+            ]
+          },
+          "category": {
+            "$ref": "#/components/schemas/TicketCategorySummaryDto"
+          },
+          "createdBy": {
+            "$ref": "#/components/schemas/UserSummaryDto"
+          },
+          "assignee": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/UserSummaryDto"
+              }
+            ]
+          },
+          "siteLabel": {
+            "type": "string",
+            "nullable": true
+          },
+          "siteAddress": {
+            "type": "string",
+            "nullable": true
+          },
+          "slaDueAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "assignedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "startedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "resolvedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "closedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "cancelledAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "resolutionNote": {
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "reference",
+          "title",
+          "description",
+          "status",
+          "priority",
+          "category",
+          "createdBy",
+          "assignee",
+          "siteLabel",
+          "siteAddress",
+          "slaDueAt",
+          "assignedAt",
+          "startedAt",
+          "resolvedAt",
+          "closedAt",
+          "cancelledAt",
+          "resolutionNote",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "TicketListCategorySummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name"
+        ]
+      },
+      "TicketListAssigneeSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "username"
+        ]
+      },
+      "TicketListItemDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "reference": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "status": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TicketStatus"
+              }
+            ]
+          },
+          "priority": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TicketPriority"
+              }
+            ]
+          },
+          "category": {
+            "$ref": "#/components/schemas/TicketListCategorySummaryDto"
+          },
+          "assignee": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TicketListAssigneeSummaryDto"
+              }
+            ]
+          },
+          "slaDueAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "reference",
+          "title",
+          "status",
+          "priority",
+          "category",
+          "assignee",
+          "slaDueAt",
+          "createdAt"
+        ]
+      },
+      "UpdateTicketDto": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Panne de climatisation salle serveur",
+            "minLength": 3,
+            "maxLength": 150
+          },
+          "description": {
+            "type": "string",
+            "example": "La climatisation ne démarre plus depuis ce matin.",
+            "minLength": 1,
+            "maxLength": 5000
+          },
+          "priority": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TicketPriority"
+              }
+            ]
+          },
+          "categoryId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "siteLabel": {
+            "type": "string",
+            "maxLength": 150
+          },
+          "siteAddress": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
+      },
+      "ResolveTicketDto": {
+        "type": "object",
+        "properties": {
+          "resolutionNote": {
+            "type": "string",
+            "example": "Climatiseur remis en service après remplacement du condensateur.",
+            "minLength": 1,
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "resolutionNote"
+        ]
+      },
+      "ReasonDto": {
+        "type": "object",
+        "properties": {
+          "reason": {
+            "type": "string",
+            "example": "Le problème persiste, la climatisation ne fonctionne toujours pas.",
+            "minLength": 1,
+            "maxLength": 1000
+          }
+        }
+      },
+      "TechnicianSuggestionDto": {
+        "type": "object",
+        "properties": {
+          "technicianId": {
+            "type": "string",
+            "description": "userId of the candidate technician (D4)"
+          },
+          "username": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "skillLevel": {
+            "type": "number",
+            "nullable": true,
+            "minimum": 1,
+            "maximum": 5,
+            "description": "The candidate's level on the ticket category's required skill, or null when the category has no required skill"
+          },
+          "currentLoad": {
+            "type": "number"
+          },
+          "maxConcurrentTickets": {
+            "type": "number"
+          }
+        },
+        "required": [
+          "technicianId",
+          "username",
+          "firstName",
+          "lastName",
+          "skillLevel",
+          "currentLoad",
+          "maxConcurrentTickets"
+        ]
+      },
+      "AssignTicketDto": {
+        "type": "object",
+        "properties": {
+          "technicianId": {
+            "type": "string",
+            "description": "userId of the technician to assign (D4 — never TechnicianProfile.id)"
+          },
+          "reason": {
+            "type": "string",
+            "example": "Le technicien précédent est indisponible pour la journée.",
+            "minLength": 1,
+            "maxLength": 1000,
+            "description": "Mandatory (enforced by the P3 guard, not this DTO) when reassigning a ticket already ASSIGNED to someone else."
+          },
+          "isAutoSuggested": {
+            "type": "boolean",
+            "default": false,
+            "description": "D6: set by the caller when this assignment follows a suggestion read from GET .../assignment-suggestions. Purely informational — the suggestion endpoint itself never triggers an assignment."
+          }
+        },
+        "required": [
+          "technicianId"
+        ]
+      },
+      "AssignmentActorSummaryDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "username"
+        ]
+      },
+      "TicketAssignmentResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "technician": {
+            "$ref": "#/components/schemas/AssignmentActorSummaryDto"
+          },
+          "assignedBy": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/AssignmentActorSummaryDto"
+              }
+            ]
+          },
+          "reason": {
+            "type": "string",
+            "nullable": true
+          },
+          "isAutoSuggested": {
+            "type": "boolean"
+          },
+          "assignedAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "unassignedAt": {
+            "format": "date-time",
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "technician",
+          "assignedBy",
+          "reason",
+          "isAutoSuggested",
+          "assignedAt",
+          "unassignedAt"
+        ]
+      },
+      "TechnicianSkillInputDto": {
+        "type": "object",
+        "properties": {
+          "skillId": {
+            "type": "string",
+            "format": "uuid"
+          },
+          "level": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5,
+            "default": 3,
+            "description": "1 (novice) to 5 (expert). Defaults to 3 when omitted."
+          }
+        },
+        "required": [
+          "skillId"
+        ]
+      },
+      "CreateTechnicianDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "jtech",
+            "minLength": 3,
+            "maxLength": 50
+          },
+          "email": {
+            "type": "string",
+            "example": "jtech@example.com"
+          },
+          "password": {
+            "type": "string",
+            "example": "Str0ngP@ssw0rd",
+            "minLength": 10,
+            "maxLength": 72
+          },
+          "firstName": {
+            "type": "string",
+            "example": "Jane",
+            "maxLength": 80
+          },
+          "lastName": {
+            "type": "string",
+            "example": "Doe",
+            "maxLength": 80
+          },
+          "phone": {
+            "type": "string",
+            "example": "+1 555 123 4567",
+            "maxLength": 30
+          },
+          "isAvailable": {
+            "type": "boolean",
+            "default": true
+          },
+          "maxConcurrentTickets": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 50,
+            "default": 5
+          },
+          "skills": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TechnicianSkillInputDto"
+            }
+          }
+        },
+        "required": [
+          "username",
+          "email",
+          "password"
+        ]
+      },
+      "TechnicianSkillResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "level": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 5
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "level"
+        ]
+      },
+      "TechnicianResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "The technician's userId (D4), not TechnicianProfile.id"
+          },
+          "username": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "phone": {
+            "type": "string",
+            "nullable": true
+          },
+          "isActive": {
+            "type": "boolean"
+          },
+          "isAvailable": {
+            "type": "boolean"
+          },
+          "maxConcurrentTickets": {
+            "type": "number"
+          },
+          "currentLoad": {
+            "type": "number"
+          },
+          "skills": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TechnicianSkillResponseDto"
+            }
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "email",
+          "firstName",
+          "lastName",
+          "phone",
+          "isActive",
+          "isAvailable",
+          "maxConcurrentTickets",
+          "currentLoad",
+          "skills"
+        ]
+      },
+      "UpdateAvailabilityDto": {
+        "type": "object",
+        "properties": {
+          "isAvailable": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "isAvailable"
+        ]
+      },
+      "UpdateTechnicianDto": {
+        "type": "object",
+        "properties": {
+          "isAvailable": {
+            "type": "boolean"
+          },
+          "maxConcurrentTickets": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        }
+      },
+      "SetTechnicianSkillsDto": {
+        "type": "object",
+        "properties": {
+          "skills": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TechnicianSkillInputDto"
+            }
+          }
+        },
+        "required": [
+          "skills"
+        ]
+      },
+      "CommentVisibility": {
+        "type": "string",
+        "enum": [
+          "PUBLIC",
+          "INTERNAL"
+        ],
+        "description": "INTERNAL is reserved to ADMIN/TECHNICIAN — a CLIENT sending INTERNAL is rejected with 403 (never silently downgraded to PUBLIC)."
+      },
+      "CreateCommentDto": {
+        "type": "object",
+        "properties": {
+          "body": {
+            "type": "string",
+            "example": "Le technicien est en route, arrivée estimée dans 30 minutes.",
+            "minLength": 1,
+            "maxLength": 5000
+          },
+          "visibility": {
+            "default": "PUBLIC",
+            "description": "INTERNAL is reserved to ADMIN/TECHNICIAN — a CLIENT sending INTERNAL is rejected with 403 (never silently downgraded to PUBLIC).",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CommentVisibility"
+              }
+            ]
+          }
+        },
+        "required": [
+          "body"
+        ]
+      },
+      "CommentAuthorDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "username"
+        ]
+      },
+      "CommentResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "visibility": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CommentVisibility"
+              }
+            ]
+          },
+          "author": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/CommentAuthorDto"
+              }
+            ]
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "body",
+          "visibility",
+          "author",
+          "createdAt"
+        ]
+      },
+      "AttachmentResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "originalName": {
+            "type": "string"
+          },
+          "mimeType": {
+            "type": "string"
+          },
+          "sizeBytes": {
+            "type": "number"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string"
+          },
+          "downloadUrl": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "originalName",
+          "mimeType",
+          "sizeBytes",
+          "createdAt",
+          "downloadUrl"
+        ]
+      },
+      "CreateSkillDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Plomberie",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "description": {
+            "type": "string",
+            "example": "Fuites, tuyauterie, sanitaires.",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "SkillResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description"
+        ]
+      },
+      "NotificationType": {
+        "type": "string",
+        "enum": [
+          "TICKET_CREATED",
+          "TICKET_ASSIGNED",
+          "TICKET_STATUS_CHANGED",
+          "TICKET_COMMENTED",
+          "TICKET_SLA_BREACHED"
+        ]
+      },
+      "NotificationResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "type": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/NotificationType"
+              }
+            ]
+          },
+          "title": {
+            "type": "string"
+          },
+          "body": {
+            "type": "string"
+          },
+          "payload": {
+            "type": "object",
+            "additionalProperties": true,
+            "nullable": true,
+            "description": "Front-end deep-link ids (ticketId, reference, and — depending on type — fromStatus/toStatus/assigneeId). Never the comment body."
+          },
+          "ticketId": {
+            "type": "string",
+            "nullable": true
+          },
+          "ticketReference": {
+            "type": "string",
+            "nullable": true,
+            "description": "The ticket's human-readable reference, resolved via the entity's `ticket` relation, for the front-end deep-link."
+          },
+          "readAt": {
+            "type": "string",
+            "nullable": true,
+            "format": "date-time"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": [
+          "id",
+          "type",
+          "title",
+          "body",
+          "payload",
+          "ticketId",
+          "ticketReference",
+          "readAt",
+          "createdAt"
+        ]
+      },
+      "UnreadCountResponseDto": {
+        "type": "object",
+        "properties": {
+          "count": {
+            "type": "number",
+            "example": 3
+          }
+        },
+        "required": [
+          "count"
+        ]
+      },
+      "CreateCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "example": "Panne électrique",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "description": {
+            "type": "string",
+            "example": "Coupure ou dysfonctionnement électrique.",
+            "maxLength": 2000
+          },
+          "requiredSkillId": {
+            "type": "string",
+            "format": "uuid",
+            "description": "Skill required to handle this category. Drives the automatic assignment suggestion."
+          }
+        },
+        "required": [
+          "name"
+        ]
+      },
+      "CategoryResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string",
+            "nullable": true
+          },
+          "requiredSkill": {
+            "nullable": true,
+            "type": "object",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/SkillResponseDto"
+              }
+            ]
+          },
+          "isActive": {
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "description",
+          "requiredSkill",
+          "isActive"
+        ]
+      },
+      "UpdateCategoryDto": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 80
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "requiredSkillId": {
+            "type": "object",
+            "format": "uuid",
+            "nullable": true,
+            "description": "Send null to clear the required skill; omit to leave it as is."
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Set to false to retire the category: it stays attached to historical tickets but can no longer be chosen for a new one."
+          }
+        }
+      },
+      "SlaPolicyResponseDto": {
+        "type": "object",
+        "properties": {
+          "priority": {
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TicketPriority"
+              }
+            ]
+          },
+          "resolutionTargetMinutes": {
+            "type": "number",
+            "example": 240,
+            "description": "Resolution target, in minutes from ticket creation. Applies to tickets created AFTER the last change (D8)."
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string"
+          }
+        },
+        "required": [
+          "priority",
+          "resolutionTargetMinutes",
+          "updatedAt"
+        ]
+      },
+      "UpsertSlaPolicyDto": {
+        "type": "object",
+        "properties": {
+          "resolutionTargetMinutes": {
+            "type": "number",
+            "example": 240,
+            "minimum": 1,
+            "maximum": 525600,
+            "description": "Resolution target in minutes, counted from ticket creation."
+          }
+        },
+        "required": [
+          "resolutionTargetMinutes"
+        ]
+      }
+    }
+  }
+}
